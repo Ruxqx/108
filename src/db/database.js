@@ -1,57 +1,33 @@
-const path = require("path");
-const fs = require("fs");
-const sqlite3 = require("sqlite3").verbose();
+const { Pool } = require("pg");
 
-const databasePath = process.env.DATABASE_PATH || path.join(process.cwd(), "data", "blackjack.sqlite");
-const databaseDir = path.dirname(databasePath);
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false
+});
 
-if (!fs.existsSync(databaseDir)) {
-  fs.mkdirSync(databaseDir, { recursive: true });
+// Run an INSERT/UPDATE/DELETE — returns { id, changes }
+async function run(sql, params = []) {
+  const result = await pool.query(sql, params);
+  return {
+    id: result.rows[0]?.id ?? null,
+    changes: result.rowCount
+  };
 }
 
-const db = new sqlite3.Database(databasePath);
-
-function run(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.run(sql, params, function onRun(error) {
-      if (error) {
-        reject(error);
-        return;
-      }
-
-      resolve({ id: this.lastID, changes: this.changes });
-    });
-  });
+// Fetch a single row
+async function get(sql, params = []) {
+  const result = await pool.query(sql, params);
+  return result.rows[0] ?? null;
 }
 
-function get(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.get(sql, params, (error, row) => {
-      if (error) {
-        reject(error);
-        return;
-      }
-
-      resolve(row);
-    });
-  });
-}
-
-function all(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.all(sql, params, (error, rows) => {
-      if (error) {
-        reject(error);
-        return;
-      }
-
-      resolve(rows);
-    });
-  });
+// Fetch multiple rows
+async function all(sql, params = []) {
+  const result = await pool.query(sql, params);
+  return result.rows;
 }
 
 module.exports = {
-  db,
+  pool,
   run,
   get,
   all

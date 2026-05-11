@@ -21,7 +21,7 @@ router.post("/register", async (request, response, next) => {
       return;
     }
 
-    const existingUser = await get("SELECT id FROM users WHERE lower(username) = lower(?)", [username]);
+    const existingUser = await get("SELECT id FROM users WHERE lower(username) = lower($1)", [username]);
 
     if (existingUser) {
       response.status(409).json({ error: "That username is already taken." });
@@ -29,7 +29,10 @@ router.post("/register", async (request, response, next) => {
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
-    const result = await run("INSERT INTO users (username, password_hash) VALUES (?, ?)", [username, passwordHash]);
+    const result = await run(
+      "INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id",
+      [username, passwordHash]
+    );
 
     if (request.session.userId && request.session.userId !== result.id) {
       removeLoggedInUser(request.session.userId);
@@ -47,7 +50,7 @@ router.post("/register", async (request, response, next) => {
 router.post("/login", async (request, response, next) => {
   try {
     const { username, password } = request.body;
-    const user = await get("SELECT id, username, password_hash, chips FROM users WHERE lower(username) = lower(?)", [
+    const user = await get("SELECT id, username, password_hash, chips FROM users WHERE lower(username) = lower($1)", [
       username || ""
     ]);
 
@@ -68,7 +71,7 @@ router.post("/login", async (request, response, next) => {
     }
     await refillLoggedInUsersIfNeeded(user.id);
 
-    const refreshedUser = await get("SELECT id, username, chips FROM users WHERE id = ?", [user.id]);
+    const refreshedUser = await get("SELECT id, username, chips FROM users WHERE id = $1", [user.id]);
     response.json({ user: refreshedUser });
   } catch (error) {
     next(error);
