@@ -58,6 +58,6 @@ app.use((error, request, response, next) => {
 
 initDatabase().then(() => {
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Blackjack app running on http://localhost:${port}`);
+    console.log(`Blackjack app running on http://localhost:${PORT}`);
   });
 });
