@@ -10,7 +10,7 @@ const gameRoutes = require("./routes/game");
 const chatRoutes = require("./routes/chat");
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 10000;
 
 app.set("trust proxy", 1);
 app.use(
