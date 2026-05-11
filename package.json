@@ -1,0 +1,27 @@
+{
+  "name": "blackjack-app",
+  "version": "1.0.0",
+  "description": "Full-stack blackjack web app with user accounts, salted password hashing, SQLite persistence, and dynamic gameplay.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "db:init": "node src/db/init.js"
+  },
+  "keywords": [
+    "blackjack",
+    "express",
+    "sqlite",
+    "full-stack"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "helmet": "^8.0.0",
+    "sqlite3": "^6.0.1"
+  }
+}

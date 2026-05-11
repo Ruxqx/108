@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blackjack Table</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+
+      <!-- ── Global Chat (left column) ── -->
+      <aside id="chatPanel" class="chat-panel" hidden>
+        <div class="chat-header">
+          <span class="chat-title">Table Chat</span>
+          <span id="chatOnlineDot" class="online-dot" title="Live"></span>
+        </div>
+        <div id="chatMessages" class="chat-messages" aria-live="polite" aria-label="Chat messages"></div>
+        <form id="chatForm" class="chat-form">
+          <input
+            id="chatInput"
+            type="text"
+            maxlength="280"
+            placeholder="Say something…"
+            autocomplete="off"
+          />
+          <button type="submit" class="chat-send-btn" aria-label="Send message">↑</button>
+        </form>
+      </aside>
+
+      <!-- ── Right column: table + data ── -->
+      <div class="right-column">
+        <section class="table-panel">
+          <header class="topbar">
+            <div>
+              <p class="eyebrow">Live blackjack project</p>
+              <h1>Blackjack Table</h1>
+            </div>
+            <div class="account-strip">
+              <span id="usernameLabel">Guest</span>
+              <strong><span id="chipCount">0</span> chips</strong>
+              <button id="logoutButton" class="icon-button" title="Log out" hidden>Log out</button>
+            </div>
+          </header>
+
+          <div id="authView" class="auth-grid">
+            <form id="registerForm" class="auth-card">
+              <h2>Create account</h2>
+              <label>
+                Username
+                <input name="username" minlength="3" maxlength="20" autocomplete="username" required />
+              </label>
+              <label>
+                Password
+                <input name="password" type="password" minlength="8" autocomplete="new-password" required />
+              </label>
+              <button type="submit">Register</button>
+            </form>
+
+            <form id="loginForm" class="auth-card">
+              <h2>Log in</h2>
+              <label>
+                Username
+                <input name="username" autocomplete="username" required />
+              </label>
+              <label>
+                Password
+                <input name="password" type="password" autocomplete="current-password" required />
+              </label>
+              <button type="submit">Log in</button>
+            </form>
+          </div>
+
+          <section id="gameView" class="game-layout" hidden>
+            <div class="felt">
+              <div class="hand-row">
+                <div class="hand-heading">
+                  <span>Dealer</span>
+                  <strong id="dealerTotal">?</strong>
+                </div>
+                <div id="dealerCards" class="cards"></div>
+              </div>
+
+              <div id="resultBanner" class="result-banner">Place a bet to begin.</div>
+
+              <div class="hand-row">
+                <div class="hand-heading">
+                  <span>Your hand</span>
+                  <strong id="playerTotal">0</strong>
+                </div>
+                <div id="playerCards" class="cards"></div>
+              </div>
+            </div>
+
+            <aside class="control-panel">
+              <form id="betForm" class="bet-box">
+                <label>
+                  Bet
+                  <input id="betInput" type="number" min="1" step="1" value="50" />
+                </label>
+                <button type="submit">Deal</button>
+              </form>
+              <div class="action-grid">
+                <button id="hitButton" disabled>Hit</button>
+                <button id="standButton" disabled>Stand</button>
+              </div>
+              <div class="stats-box">
+                <h2>Stats</h2>
+                <dl>
+                  <div><dt>Hands</dt><dd id="handsStat">0</dd></div>
+                  <div><dt>Wins</dt><dd id="winsStat">0</dd></div>
+                  <div><dt>Losses</dt><dd id="lossesStat">0</dd></div>
+                  <div><dt>Net</dt><dd id="netStat">0</dd></div>
+                </dl>
+              </div>
+            </aside>
+          </section>
+        </section>
+
+        <section id="dataView" class="dashboard-view" hidden>
+          <div class="tab-bar" aria-label="Player information">
+            <button id="statsTabButton" class="tab-button active" type="button">Stats</button>
+            <button id="guideTabButton" class="tab-button" type="button">Play Guide</button>
+          </div>
+
+          <div id="statsTabPanel" class="data-grid">
+            <div class="data-panel">
+              <h2>Recent hands</h2>
+              <div id="historyList" class="history-list"></div>
+            </div>
+            <div class="data-panel">
+              <h2>Leaderboard</h2>
+              <div id="leaderboardList" class="leaderboard-list"></div>
+            </div>
+          </div>
+        </section>
+      </div><!-- /.right-column -->
+    </main>
+
+    <div id="guideModal" class="modal-backdrop" hidden>
+      <article class="guide-panel" role="dialog" aria-modal="true" aria-labelledby="guideTitle">
+        <div class="modal-heading">
+          <div>
+            <h2 id="guideTitle">Blackjack Play Guide</h2>
+            <p>Try to get closer to 21 than the dealer without going over.</p>
+          </div>
+          <button id="closeGuideButton" class="icon-button" type="button" aria-label="Close play guide">Close</button>
+        </div>
+
+        <div class="guide-grid">
+          <section>
+            <h3>Card values</h3>
+            <ul>
+              <li>Number cards count as their number.</li>
+              <li>J, Q, and K count as 10.</li>
+              <li>Aces count as 11, or 1 if 11 would bust your hand.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Your turn</h3>
+            <ul>
+              <li>Choose Hit to take another card.</li>
+              <li>Choose Stand to keep your total and let the dealer play.</li>
+              <li>If your total goes over 21, you bust and lose the bet.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Dealer rules</h3>
+            <ul>
+              <li>The dealer reveals their hidden card after you stand.</li>
+              <li>The dealer keeps drawing until their hand is at least 17.</li>
+              <li>If the dealer busts, you win.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3>Results and chips</h3>
+            <ul>
+              <li>A win pays your bet amount.</li>
+              <li>A blackjack pays one and a half times your bet.</li>
+              <li>A push is a tie, so no chips are won or lost.</li>
+              <li>If a logged-in player hits 0 chips, all logged-in players get 200 chips.</li>
+            </ul>
+          </section>
+        </div>
+      </article>
+    </div>
+
+    <div id="toast" class="toast" hidden></div>
+    <script src="/app.js"></script>
+  </body>
+</html>
