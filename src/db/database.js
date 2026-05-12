@@ -5,7 +5,6 @@ const pool = new Pool({
   ssl: process.env.NODE_ENV === "production" ? { rejectUnauthorized: false } : false
 });
 
-// Run an INSERT/UPDATE/DELETE — returns { id, changes }
 async function run(sql, params = []) {
   const result = await pool.query(sql, params);
   return {

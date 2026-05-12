@@ -9,6 +9,7 @@ async function initDatabase() {
       username    TEXT NOT NULL UNIQUE,
       password_hash TEXT NOT NULL,
       chips       INTEGER NOT NULL DEFAULT 1000,
+      is_admin    BOOLEAN NOT NULL DEFAULT false,
       created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
     )
   `);

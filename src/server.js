@@ -8,11 +8,10 @@ const { initDatabase } = require("./db/init");
 const authRoutes = require("./routes/auth");
 const gameRoutes = require("./routes/game");
 const chatRoutes = require("./routes/chat");
+const adminRoutes = require("./routes/admin");
 
 const app = express();
-const PORT = process.env.PORT || 10000;
-
-
+const port = process.env.PORT || 3000;
 
 app.set("trust proxy", 1);
 app.use(
@@ -46,6 +45,7 @@ app.use(express.static(path.join(__dirname, "..", "public")));
 app.use("/api/auth", authRoutes);
 app.use("/api", gameRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/admin", adminRoutes);
 
 app.use((request, response) => {
   response.status(404).json({ error: "Not found." });
@@ -57,7 +57,7 @@ app.use((error, request, response, next) => {
 });
 
 initDatabase().then(() => {
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Blackjack app running on http://localhost:${PORT}`);
+  app.listen(port, () => {
+    console.log(`Blackjack app running on http://localhost:${port}`);
   });
 });

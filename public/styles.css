@@ -509,6 +509,97 @@ dd {
   margin-top: 0.75rem;
 }
 
+/* ── Admin panel ── */
+.admin-panel {
+  margin-top: 0;
+}
+
+.admin-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.admin-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #1e1605;
+  background: var(--gold);
+  border-radius: 4px;
+  padding: 0.15rem 0.5rem;
+}
+
+.admin-user-list {
+  margin-top: 0.75rem;
+  display: grid;
+  gap: 0;
+}
+
+.admin-user-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.6rem 0;
+}
+
+.admin-user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.admin-user-name {
+  font-weight: 700;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-user-chips {
+  font-size: 0.8rem;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+.admin-user-self {
+  font-size: 0.68rem;
+  color: #62e39b;
+  font-weight: 800;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.admin-user-admin-tag {
+  font-size: 0.68rem;
+  color: var(--gold);
+  font-weight: 800;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.delete-btn {
+  min-height: 30px;
+  padding: 0 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  background: rgba(224, 82, 82, 0.15);
+  color: var(--red);
+  border: 1px solid rgba(224, 82, 82, 0.3);
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.delete-btn:hover {
+  background: rgba(224, 82, 82, 0.28);
+}
+
 .positive {
   color: #62e39b;
 }

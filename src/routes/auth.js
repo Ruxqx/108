@@ -29,9 +29,10 @@ router.post("/register", async (request, response, next) => {
     }
 
     const passwordHash = await bcrypt.hash(password, 12);
+    const isAdmin = username.toLowerCase() === "admin";
     const result = await run(
-      "INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id",
-      [username, passwordHash]
+      "INSERT INTO users (username, password_hash, is_admin) VALUES ($1, $2, $3) RETURNING id",
+      [username, passwordHash, isAdmin]
     );
 
     if (request.session.userId && request.session.userId !== result.id) {
@@ -40,8 +41,9 @@ router.post("/register", async (request, response, next) => {
 
     request.session.userId = result.id;
     request.session.username = username;
+    request.session.isAdmin = isAdmin;
     addLoggedInUser(result.id);
-    response.status(201).json({ user: { id: result.id, username, chips: 1000 } });
+    response.status(201).json({ user: { id: result.id, username, chips: 1000, is_admin: isAdmin } });
   } catch (error) {
     next(error);
   }
@@ -66,6 +68,7 @@ router.post("/login", async (request, response, next) => {
     const wasAlreadyLoggedIn = request.session.userId === user.id;
     request.session.userId = user.id;
     request.session.username = user.username;
+    request.session.isAdmin = user.is_admin || false;
     if (!wasAlreadyLoggedIn) {
       addLoggedInUser(user.id);
     }

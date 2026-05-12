@@ -16,7 +16,6 @@ async function refillLoggedInUsersIfNeeded(userId) {
     return false;
   }
 
-  // Postgres uses $1, $2, $3... — $1 is the amount, $2+ are the user ids
   const placeholders = loggedInUserIds.map((_, i) => `$${i + 2}`).join(", ");
   await run(
     `UPDATE users SET chips = chips + $1 WHERE id IN (${placeholders})`,

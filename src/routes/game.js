@@ -54,7 +54,7 @@ router.get("/me", async (request, response, next) => {
   try {
     await refillLoggedInUsersIfNeeded(request.session.userId);
     const user = await get(
-      "SELECT id, username, chips FROM users WHERE id = $1",
+      "SELECT id, username, chips, is_admin FROM users WHERE id = $1",
       [request.session.userId]
     );
     response.json({ user, game: publicGame(currentGame(request)) });
@@ -92,7 +92,7 @@ router.post("/games", async (request, response, next) => {
     await refillLoggedInUsersIfNeeded(request.session.userId);
 
     const refreshedUser = await get(
-      "SELECT id, username, chips FROM users WHERE id = $1",
+      "SELECT id, username, chips, is_admin FROM users WHERE id = $1",
       [request.session.userId]
     );
     response.status(201).json({ user: refreshedUser, game: publicGame(game) });
@@ -112,7 +112,7 @@ router.post("/games/hit", async (request, response, next) => {
 
     await refillLoggedInUsersIfNeeded(request.session.userId);
     const user = await get(
-      "SELECT id, username, chips FROM users WHERE id = $1",
+      "SELECT id, username, chips, is_admin FROM users WHERE id = $1",
       [request.session.userId]
     );
     response.json({ user, game: publicGame(game) });
@@ -132,7 +132,7 @@ router.post("/games/stand", async (request, response, next) => {
 
     await refillLoggedInUsersIfNeeded(request.session.userId);
     const user = await get(
-      "SELECT id, username, chips FROM users WHERE id = $1",
+      "SELECT id, username, chips, is_admin FROM users WHERE id = $1",
       [request.session.userId]
     );
     response.json({ user, game: publicGame(game, true) });

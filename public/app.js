@@ -39,7 +39,9 @@ const elements = {
   chatPanel: document.querySelector("#chatPanel"),
   chatMessages: document.querySelector("#chatMessages"),
   chatForm: document.querySelector("#chatForm"),
-  chatInput: document.querySelector("#chatInput")
+  chatInput: document.querySelector("#chatInput"),
+  adminPanel: document.querySelector("#adminPanel"),
+  adminUserList: document.querySelector("#adminUserList")
 };
 
 async function api(path, options = {}) {
@@ -86,6 +88,12 @@ function render() {
     startChatPolling();
   } else {
     stopChatPolling();
+  }
+
+  // Show/hide admin panel
+  elements.adminPanel.hidden = !(loggedIn && state.user.is_admin);
+  if (loggedIn && state.user.is_admin) {
+    refreshAdminUsers();
   }
 
   renderGame();
@@ -423,6 +431,77 @@ elements.standButton.addEventListener("click", async () => {
     showToast(error.message);
   }
 });
+
+// ── Admin ─────────────────────────────────────────────
+
+async function refreshAdminUsers() {
+  try {
+    const { users } = await api("/api/admin/users");
+    elements.adminUserList.replaceChildren(...users.map(renderAdminUserRow));
+  } catch {
+    // not admin or error — just hide
+    elements.adminPanel.hidden = true;
+  }
+}
+
+function renderAdminUserRow(user) {
+  const isSelf = state.user && user.id === state.user.id;
+
+  const row = document.createElement("div");
+  row.className = "admin-user-row";
+
+  const info = document.createElement("div");
+  info.className = "admin-user-info";
+
+  const name = document.createElement("span");
+  name.className = "admin-user-name";
+  name.textContent = user.username;
+
+  const chips = document.createElement("span");
+  chips.className = "admin-user-chips";
+  chips.textContent = `${user.chips} chips`;
+
+  info.appendChild(name);
+  info.appendChild(chips);
+
+  if (isSelf) {
+    const selfTag = document.createElement("span");
+    selfTag.className = "admin-user-self";
+    selfTag.textContent = "You";
+    info.appendChild(selfTag);
+  } else if (user.is_admin) {
+    const adminTag = document.createElement("span");
+    adminTag.className = "admin-user-admin-tag";
+    adminTag.textContent = "Admin";
+    info.appendChild(adminTag);
+  }
+
+  row.appendChild(info);
+
+  // No delete button for self or other admins
+  if (!isSelf && !user.is_admin) {
+    const btn = document.createElement("button");
+    btn.className = "delete-btn";
+    btn.textContent = "Delete";
+    btn.addEventListener("click", () => deleteUser(user.id, user.username));
+    row.appendChild(btn);
+  }
+
+  return row;
+}
+
+async function deleteUser(userId, username) {
+  if (!confirm(`Delete user "${username}"? This cannot be undone.`)) return;
+
+  try {
+    await api(`/api/admin/users/${userId}`, { method: "DELETE" });
+    showToast(`${username} has been deleted.`);
+    await refreshAdminUsers();
+    await refreshStats(); // refresh leaderboard too
+  } catch (error) {
+    showToast(error.message);
+  }
+}
 
 api("/api/me")
   .then(async (data) => {

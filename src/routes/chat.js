@@ -2,7 +2,6 @@ const express = require("express");
 
 const router = express.Router();
 
-// In-memory store — last 100 messages
 const MAX_MESSAGES = 100;
 const messages = [];
 let nextId = 1;
@@ -17,14 +16,13 @@ function requireAuth(request, response, next) {
 
 router.use(requireAuth);
 
-// GET /api/chat?after=<id>  — returns messages newer than the given id
 router.get("/", (request, response) => {
   const after = Number(request.query.after) || 0;
   const filtered = messages.filter((m) => m.id > after);
   response.json({ messages: filtered });
 });
 
-// POST /api/chat  — send a message
+//send message
 router.post("/", (request, response) => {
   const text = (request.body.text || "").trim().slice(0, 280);
 
@@ -43,7 +41,6 @@ router.post("/", (request, response) => {
 
   messages.push(message);
 
-  // Trim to cap
   if (messages.length > MAX_MESSAGES) {
     messages.splice(0, messages.length - MAX_MESSAGES);
   }
