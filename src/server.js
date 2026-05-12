@@ -11,7 +11,7 @@ const chatRoutes = require("./routes/chat");
 const adminRoutes = require("./routes/admin");
 
 const app = express();
-const port = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
 app.set("trust proxy", 1);
 app.use(
@@ -57,7 +57,7 @@ app.use((error, request, response, next) => {
 });
 
 initDatabase().then(() => {
-  app.listen(port, () => {
-    console.log(`Blackjack app running on http://localhost:${port}`);
+  app.listen(PORT, '0.0.0.0',() => {
+    console.log(`Blackjack app running on http://localhost:${PORT}`);
   });
 });
