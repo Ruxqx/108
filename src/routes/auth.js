@@ -52,7 +52,7 @@ router.post("/register", async (request, response, next) => {
 router.post("/login", async (request, response, next) => {
   try {
     const { username, password } = request.body;
-    const user = await get("SELECT id, username, password_hash, chips FROM users WHERE lower(username) = lower($1)", [
+    const user = await get("SELECT id, username, password_hash, chips, is_admin FROM users WHERE lower(username) = lower($1)", [
       username || ""
     ]);
 
