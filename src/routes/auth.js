@@ -74,7 +74,7 @@ router.post("/login", async (request, response, next) => {
     }
     await refillLoggedInUsersIfNeeded(user.id);
 
-    const refreshedUser = await get("SELECT id, username, chips FROM users WHERE id = $1", [user.id]);
+    const refreshedUser = await get("SELECT id, username, chips, is_admin FROM users WHERE id = $1", [user.id]);
     response.json({ user: refreshedUser });
   } catch (error) {
     next(error);
